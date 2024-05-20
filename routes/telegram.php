@@ -15,3 +15,7 @@ use SergiX44\Nutgram\Nutgram;
 */
 
 $bot->registerCommand(StartCommand::class);
+
+$bot->onText('My name is {name}', function (Nutgram $bot, $name) {
+    $bot->sendMessage("Hi {$name}");
+});

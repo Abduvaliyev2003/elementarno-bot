@@ -2,6 +2,8 @@
 
 namespace App\TelegramBot\Commands;
 
+use App\Models\User;
+use App\TelegramBot\Conversations\RegisterConversation;
 use SergiX44\Nutgram\Handlers\Type\Command;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;
@@ -15,17 +17,16 @@ class StartCommand extends Command
 
     public function handle(Nutgram $bot): void
     {
-        $first_name = $bot->user()->first_name;
+        if(User::where('telegram_id', $bot->chatId())->first()){
 
-        $bot->sendMessage(
-            text: 'Assalomu alaykum ' . $first_name,
-            reply_markup: ReplyKeyboardMarkup::make(
-                resize_keyboard: true,
-            )
-                ->addRow(
-                    KeyboardButton::make('Send phone number',request_contact: true)
-                )
-        );
+        } else  {
+            RegisterConversation::begin(
+                bot: $bot,
+                userId: $bot->userId(),
+                chatId: $bot->chatId(),
+            );
+        }
+
     }
 
 }
