@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->boolean('is_verified');
             $table->bigInteger('telegram_id');
+            $table->string('lang')->nullable();
+            $table->string('type');
             $table->rememberToken();
             $table->timestamps();
         });

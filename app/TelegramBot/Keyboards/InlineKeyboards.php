@@ -8,14 +8,14 @@ use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
 
 class InlineKeyboards
 {
-    public static function address():InlineKeyboardMarkup
+    public static function address(string $reg):InlineKeyboardMarkup
     {
         $inlineKeyboardMarkup = InlineKeyboardMarkup::make();
         $regions = [];
 
         foreach (Regions::get() as $region) {
             $regions[] = InlineKeyboardButton::make(
-                text: $region->name, callback_data: 'region_' . $region->id
+                text: $region->name, callback_data: $reg . $region->id
             );
             if (count($regions) == 2) {
                 $inlineKeyboardMarkup->addRow(...$regions);
@@ -29,4 +29,16 @@ class InlineKeyboards
 
         return $inlineKeyboardMarkup;
     }
+
+
+    public static function language()
+    {
+        return InlineKeyboardMarkup::make()
+        ->addRow(
+            InlineKeyboardButton::make("🇺🇿O'zbekcha", callback_data: 'lang: uz'),
+            InlineKeyboardButton::make("🇷🇺Русский", callback_data: 'lang: ru')
+        );
+
+    }
+
 }

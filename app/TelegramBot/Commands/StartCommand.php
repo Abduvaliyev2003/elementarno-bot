@@ -24,7 +24,7 @@ class StartCommand extends Command
             userId: $bot->userId(),
             chatId: $bot->chatId(),);
         } else  {
-            RegisterConversation ::begin(
+            RegisterConversation::begin(
                 bot: $bot,
                 userId: $bot->userId(),
                 chatId: $bot->chatId(),

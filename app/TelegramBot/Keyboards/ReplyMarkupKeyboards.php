@@ -2,6 +2,7 @@
 
 namespace App\TelegramBot\Keyboards;
 
+use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
 
@@ -45,7 +46,7 @@ class ReplyMarkupKeyboards
             'ru' => '⬅️ Назад'
         ],
         [
-            'uz' => '⬅️ 👤 Ismni o‘zgartirish',
+            'uz' => '👤 Ismni o‘zgartirish',
             'ru' => '👤 Ismni o‘zgartirish'
         ],
         [
@@ -53,7 +54,7 @@ class ReplyMarkupKeyboards
             'ru' => '🏙 Shaharni o‘zgartirish'
         ],
         [
-            'uz' => '🇺🇿🇷🇺 Tilni o‘zgartiris',
+            'uz' => '🇺🇿🇷🇺 Tilni o‘zgartirish',
             'ru' => '🇺🇺🇿🇷🇺 Изменить язык'
         ],
         [
@@ -67,7 +68,7 @@ class ReplyMarkupKeyboards
             resize_keyboard: true,
             one_time_keyboard: true,
         )->addRow(
-            KeyboardButton::make('🇺🇿O\'zbekcha'),
+            KeyboardButton::make("🇺🇿O'zbekcha"),
             KeyboardButton::make('🇷🇺Русский'),
         );
     }
@@ -90,9 +91,12 @@ class ReplyMarkupKeyboards
         return self::createKeyboard(self::$menus);
     }
 
-    public static function setting(): ReplyKeyboardMarkup
+    public static function setting($bot)
     {
-        return self::createKeyboard(self::$settingMenu);
+         $bot->sendMessage(
+            text: 'Harakatni tanlang:',
+            reply_markup: self::createKeyboard(self::$settingMenu)
+        );
     }
 
     private static function createKeyboard(array $menusData): ReplyKeyboardMarkup

@@ -4,6 +4,7 @@ namespace App\TelegramBot\Conversations;
 
 use App\Models\Regions;
 use App\Models\User;
+use App\TelegramBot\Actions\SetLanguage;
 use App\TelegramBot\Keyboards\InlineKeyboards;
 use App\TelegramBot\Keyboards\ReplyMarkupKeyboards;
 use Psr\SimpleCache\InvalidArgumentException;
@@ -20,7 +21,7 @@ class RegisterConversation extends Conversation
 {
     public array $data = [];
     public array $region = [];
-
+    public array $lang = [];
     /**
      * @throws InvalidArgumentException
      */
@@ -38,6 +39,13 @@ class RegisterConversation extends Conversation
 
     public function secondStep(Nutgram $bot): void
     {
+        if("🇺🇿O'zbekcha" ==  $bot->message()->text)
+        {
+           $this->lang['lang'] = 'uz';
+        } else if("🇷🇺Русский" ==  $bot->message()->text)
+        {
+            $this->lang['lang'] = 'ru';
+        }
         $bot->sendMessage(
             text: __('telegram.start_message_new_user'),
             reply_markup: ReplyMarkupKeyboards::phone(__('telegram.buttons.send_contact'))
@@ -66,7 +74,7 @@ class RegisterConversation extends Conversation
         )?->delete();
         $bot->sendMessage(
             text:__('telegram.success_number'),
-            reply_markup: InlineKeyboards::address()
+            reply_markup: InlineKeyboards::address('region_')
         );
         $this->next('setAddress');
     }
@@ -98,6 +106,7 @@ class RegisterConversation extends Conversation
                 'name' => $bot->message()->text,
                 'phone' => $this->data['phone'],
                 'address' => $this->region['region_id'],
+                'lang' =>  $this->lang['lang'],
                 'is_verified' => false
             ]);
         }
