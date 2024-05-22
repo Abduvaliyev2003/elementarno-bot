@@ -2,7 +2,10 @@
 /** @var SergiX44\Nutgram\Nutgram $bot */
 
 use App\TelegramBot\Commands\StartCommand;
+use App\TelegramBot\Keyboards\ReplyMarkupKeyboards;
 use SergiX44\Nutgram\Nutgram;
+use SergiX44\Nutgram\Telegram\Types\Command\BotCommandScopeAllGroupChats;
+use SergiX44\Nutgram\Telegram\Types\Command\BotCommandScopeAllPrivateChats;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,8 +17,16 @@ use SergiX44\Nutgram\Nutgram;
 |
 */
 
-$bot->registerCommand(StartCommand::class);
+$bot->registerCommand(StartCommand::class)->scope([
+    new BotCommandScopeAllPrivateChats,
+    new BotCommandScopeAllGroupChats,
+]);
 
-$bot->onText('My name is {name}', function (Nutgram $bot, $name) {
-    $bot->sendMessage("Hi {$name}");
+;
+
+$bot->onText('⚙️ Sozlamalar', function (Nutgram $bot) {
+    $bot->sendMessage(
+        text: 'Harakatni tanlang:',
+        reply_markup: ReplyMarkupKeyboards::setting()
+    );
 });

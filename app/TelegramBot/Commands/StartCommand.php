@@ -3,6 +3,7 @@
 namespace App\TelegramBot\Commands;
 
 use App\Models\User;
+use App\TelegramBot\Conversations\MenuConversation;
 use App\TelegramBot\Conversations\RegisterConversation;
 use SergiX44\Nutgram\Handlers\Type\Command;
 use SergiX44\Nutgram\Nutgram;
@@ -18,9 +19,12 @@ class StartCommand extends Command
     public function handle(Nutgram $bot): void
     {
         if(User::where('telegram_id', $bot->chatId())->first()){
-
+            $first_name = $bot->user()->first_name;
+            MenuConversation::begin( bot: $bot,
+            userId: $bot->userId(),
+            chatId: $bot->chatId(),);
         } else  {
-            RegisterConversation::begin(
+            RegisterConversation ::begin(
                 bot: $bot,
                 userId: $bot->userId(),
                 chatId: $bot->chatId(),
