@@ -7,6 +7,6 @@ class SetName
 {
     public static function set(string $chat_id, string $name): void
     {
-        (new UserRepository())->setName($chat_id, $name);
+        (new UserRepository())->updateUser($chat_id, ['name' => $name]);
     }
 }

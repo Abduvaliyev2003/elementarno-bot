@@ -8,6 +8,6 @@ class SetLanguage
 {
     public static function set(string $chat_id, string $lang): void
     {
-        (new UserRepository())->setLanguage($chat_id, $lang);
+        (new UserRepository())->updateUser($chat_id, ['lang' => $lang]);
     }
 }

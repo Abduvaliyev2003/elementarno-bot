@@ -2,19 +2,25 @@
 
 /** @var SergiX44\Nutgram\Nutgram $bot */
 
+
 use App\Models\User;
 use App\Repositories\UserRepository;
 use App\TelegramBot\Actions\SetAddress;
 use App\TelegramBot\Actions\SetLanguage;
+use App\TelegramBot\Actions\SetUserPage;
 use App\TelegramBot\Commands\StartCommand;
 use App\TelegramBot\Conversations\ChangeNameConversation;
 use App\TelegramBot\Conversations\RegisterConversation;
 use App\TelegramBot\Keyboards\InlineKeyboards;
 use App\TelegramBot\Keyboards\ReplyMarkupKeyboards;
+use App\TelegramBot\LookUserPage\Back;
 use SergiX44\Nutgram\Conversations\Conversation;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Command\BotCommandScopeAllGroupChats;
 use SergiX44\Nutgram\Telegram\Types\Command\BotCommandScopeAllPrivateChats;
+use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
+use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
+use SergiX44\Nutgram\Telegram\Types\WebApp\WebAppInfo;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,8 +40,20 @@ $bot->registerCommand(StartCommand::class)->description('The start command!')->s
 ]);
 
 
+$bot->onText('Biz haqimizda', function(Nutgram $bot){
+    $bot->sendMessage(
+        text: 'https://telegra.ph/Elementarno-05-23',
+        reply_markup: InlineKeyboardMarkup::make()
+            ->addRow(
+                InlineKeyboardButton::make('Open', web_app: WebAppInfo::make('https://www.elementarnoo.uz/'))
+            )
+    );
+
+});
+
 
 $bot->onText('⚙️ Sozlamalar', function (Nutgram $bot) {
+    SetUserPage::set($bot->chat()->id, 'setting');
     ReplyMarkupKeyboards::setting($bot);
 });
 $bot->onText('🇺🇿🇷🇺 Tilni o‘zgartirish', function (Nutgram $bot) {
@@ -50,6 +68,10 @@ $bot->onText('👤 Ismni o‘zgartirish', function (Nutgram $bot) {
     ChangeNameConversation::begin($bot);
 });
 
+$bot->onText('⬅️ Orqaga', function (Nutgram $bot) {
+    Back::backPage($bot);
+});
+
 
 $bot->onCallbackQueryData('lang: {param}', function (Nutgram $bot, $param) {
     SetLanguage::set($bot->chat()->id, $param);
@@ -61,7 +83,6 @@ $bot->onCallbackQueryData('region {param}', function (Nutgram $bot, $param) {
     $bot->deleteMessage($bot->chatId(), $bot->messageId());
     ReplyMarkupKeyboards::setting($bot);
 });
-
 
 
 $bot->onText('🚪 Chiqish', function (Nutgram $bot) {

@@ -5,8 +5,8 @@ use App\Repositories\UserRepository;
 
 class SetAddress
 {
-    public static function set(string $chat_id, string $lang): void
+    public static function set(string $chat_id, string $address): void
     {
-        (new UserRepository())->setAddress($chat_id, $lang);
+        (new UserRepository())->updateUser($chat_id, ['address' => $address]);
     }
 }
