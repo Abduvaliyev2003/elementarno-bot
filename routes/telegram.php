@@ -30,6 +30,8 @@ use SergiX44\Nutgram\Telegram\Types\WebApp\WebAppInfo;
 | Here is where you can register telegram handlers for Nutgram. These
 | handlers are loaded by the NutgramServiceProvider. Enjoy!
 |
+
+
 */
 
 Conversation::refreshOnDeserialize();
@@ -49,6 +51,16 @@ $bot->onText('Biz haqimizda', function(Nutgram $bot){
             )
     );
 
+});
+
+$bot->onText('Kartichkalar', function(Nutgram $bot){
+    $bot->sendMessage(
+        text: 'https://telegra.ph/Elementarno-05-23',
+        reply_markup: InlineKeyboardMarkup::make()
+            ->addRow(
+                InlineKeyboardButton::make('Open', web_app: WebAppInfo::make('https://www.elementarnoo.uz/'))
+            )
+    );
 });
 
 
