@@ -9,6 +9,7 @@ use App\TelegramBot\Actions\SetAddress;
 use App\TelegramBot\Actions\SetLanguage;
 use App\TelegramBot\Actions\SetUserPage;
 use App\TelegramBot\Commands\StartCommand;
+use App\TelegramBot\Conversations\Admin\CategoryCreateConversation;
 use App\TelegramBot\Conversations\ChangeNameConversation;
 use App\TelegramBot\Conversations\RegisterConversation;
 use App\TelegramBot\Keyboards\InlineKeyboards;
@@ -58,12 +59,10 @@ $bot->onText('Kartichkalar', function(Nutgram $bot){
         text: 'https://telegra.ph/Elementarno-05-23',
         reply_markup: InlineKeyboardMarkup::make()
             ->addRow(
-                InlineKeyboardButton::make('Open', web_app: WebAppInfo::make('https://www.elementarnoo.uz/'))
+                InlineKeyboardButton::make('Open', web_app: WebAppInfo::make('https://666b4a50e0405148de9de36b--incomparable-puppy-c236be.netlify.app/'))
             )
     );
 });
-
-
 $bot->onText('⚙️ Sozlamalar', function (Nutgram $bot) {
     SetUserPage::set($bot->chat()->id, 'setting');
     ReplyMarkupKeyboards::setting($bot);
@@ -83,8 +82,6 @@ $bot->onText('👤 Ismni o‘zgartirish', function (Nutgram $bot) {
 $bot->onText('⬅️ Orqaga', function (Nutgram $bot) {
     Back::backPage($bot);
 });
-
-
 $bot->onCallbackQueryData('lang: {param}', function (Nutgram $bot, $param) {
     SetLanguage::set($bot->chat()->id, $param);
     $bot->deleteMessage($bot->chatId(), $bot->messageId());
@@ -96,8 +93,12 @@ $bot->onCallbackQueryData('region {param}', function (Nutgram $bot, $param) {
     ReplyMarkupKeyboards::setting($bot);
 });
 
-
 $bot->onText('🚪 Chiqish', function (Nutgram $bot) {
     (new UserRepository())->logout($bot->chat()->id);
     (new StartCommand())->handle($bot);
+});
+
+
+$bot->onCallbackQueryData('admin:add_card', function (Nutgram $bot){
+    CategoryCreateConversation::begin($bot);
 });

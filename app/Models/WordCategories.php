@@ -10,7 +10,9 @@ class WordCategories extends Model
     use HasFactory;
 
     protected $fillable  = [
-        'title',
+        'title_uz',
+        'title_ru',
+        'title_en',
         'image',
     ];
 }

@@ -41,4 +41,12 @@ class InlineKeyboards
 
     }
 
+    public static function adminMenu()
+    {
+        return InlineKeyboardMarkup::make()
+        ->addRow(
+            InlineKeyboardButton::make("Kartalar", callback_data: 'admin:add_card'),
+            InlineKeyboardButton::make("Category", callback_data: 'admin:categories')
+        );
+    }
 }
