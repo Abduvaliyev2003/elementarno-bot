@@ -8,6 +8,7 @@ use App\Repositories\UserRepository;
 use App\TelegramBot\Actions\SetAddress;
 use App\TelegramBot\Actions\SetLanguage;
 use App\TelegramBot\Actions\SetUserPage;
+use App\TelegramBot\Admin\Category\CategoryAdmin;
 use App\TelegramBot\Commands\StartCommand;
 use App\TelegramBot\Conversations\Admin\CategoryCreateConversation;
 use App\TelegramBot\Conversations\ChangeNameConversation;
@@ -99,6 +100,7 @@ $bot->onText('🚪 Chiqish', function (Nutgram $bot) {
 });
 
 
-$bot->onCallbackQueryData('admin:add_card', function (Nutgram $bot){
+$bot->onCallbackQueryData('admin:categories', CategoryAdmin::class);
+$bot->onCallbackQueryData('category:{param}', function (Nutgram $bot){
     CategoryCreateConversation::begin($bot);
 });
