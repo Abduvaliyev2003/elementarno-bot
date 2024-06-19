@@ -4,6 +4,7 @@ namespace App\TelegramBot\Conversations\Admin;
 
 use App\Models\WordCategories;
 use App\TelegramBot\Actions\SetName;
+use App\TelegramBot\Admin\Category\CategoryAdmin;
 use App\TelegramBot\Keyboards\ReplyMarkupKeyboards;
 use SergiX44\Nutgram\Conversations\Conversation;
 use SergiX44\Nutgram\Nutgram;
@@ -40,7 +41,7 @@ class  CategoryCreateConversation extends Conversation
     public function FourStep(Nutgram $bot)
 {
     $message = $bot->message();
-    
+
     // Check if the message contains a document, photo, etc.
     if (isset($message->document)) {
         $fileId = $message->document->file_id;
@@ -61,8 +62,11 @@ class  CategoryCreateConversation extends Conversation
         'file_url' => $fileUrl,
     ]);
 
-    $bot->sendMessage("Karta yaratildi: $fileUrl");
+    $bot->sendMessage("Karta yaratildi");
+
     $this->end();
+    $categoryAdmin = new CategoryAdmin();
+    $categoryAdmin($bot);
 }
 
 

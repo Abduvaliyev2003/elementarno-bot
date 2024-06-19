@@ -4,6 +4,7 @@
 namespace App\TelegramBot\Admin\Category;
 
 use App\Models\WordCategories;
+use App\TelegramBot\Conversations\Admin\CategoryCreateConversation;
 use App\TelegramBot\Keyboards\InlineKeyboards;
 use SergiX44\Nutgram\Nutgram;
 
@@ -21,5 +22,16 @@ class CategoryAdmin
             text: $categoryListText,
             reply_markup: InlineKeyboards::CategoryMenu()
         );
+    }
+
+
+
+    public static function filterCall(Nutgram $bot, $param)
+    {
+        $bot->deleteMessage($bot->chatId(), $bot->messageId());
+        if($param == 'add')
+        {
+            CategoryCreateConversation::begin($bot);
+        }
     }
 }

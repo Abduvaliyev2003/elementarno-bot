@@ -101,6 +101,6 @@ $bot->onText('🚪 Chiqish', function (Nutgram $bot) {
 
 
 $bot->onCallbackQueryData('admin:categories', CategoryAdmin::class);
-$bot->onCallbackQueryData('category:{param}', function (Nutgram $bot){
-    CategoryCreateConversation::begin($bot);
+$bot->onCallbackQueryData('category:{param}', function (Nutgram $bot, $param){
+    CategoryAdmin::filterCall($bot, $param);
 });
