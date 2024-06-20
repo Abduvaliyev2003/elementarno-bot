@@ -9,6 +9,7 @@ use App\TelegramBot\Actions\SetAddress;
 use App\TelegramBot\Actions\SetLanguage;
 use App\TelegramBot\Actions\SetUserPage;
 use App\TelegramBot\Admin\Category\CategoryAdmin;
+use App\TelegramBot\Admin\Words\WordAdmin;
 use App\TelegramBot\Commands\StartCommand;
 use App\TelegramBot\Conversations\Admin\CategoryCreateConversation;
 use App\TelegramBot\Conversations\ChangeNameConversation;
@@ -60,7 +61,7 @@ $bot->onText('Kartichkalar', function(Nutgram $bot){
         text: 'https://telegra.ph/Elementarno-05-23',
         reply_markup: InlineKeyboardMarkup::make()
             ->addRow(
-                InlineKeyboardButton::make('Open', web_app: WebAppInfo::make('https://666b4a50e0405148de9de36b--incomparable-puppy-c236be.netlify.app/'))
+                InlineKeyboardButton::make('Open', web_app: WebAppInfo::make('https://666ed8f43d4ad0c9edaa6916--capable-sopapillas-c7ca1a.netlify.app/'))
             )
     );
 });
@@ -101,6 +102,10 @@ $bot->onText('🚪 Chiqish', function (Nutgram $bot) {
 
 
 $bot->onCallbackQueryData('admin:categories', CategoryAdmin::class);
+$bot->onCallbackQueryData('admin:cards', WordAdmin::class);
 $bot->onCallbackQueryData('category:{param}', function (Nutgram $bot, $param){
     CategoryAdmin::filterCall($bot, $param);
+});
+$bot->onCallbackQueryData('word:{param}', function (Nutgram $bot, $param){
+    WordAdmin::filterCall($bot, $param);
 });

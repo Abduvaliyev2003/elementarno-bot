@@ -46,7 +46,7 @@ class InlineKeyboards
     {
         return InlineKeyboardMarkup::make()
         ->addRow(
-            InlineKeyboardButton::make("Kartalar", callback_data: 'admin:add_card'),
+            InlineKeyboardButton::make("Kartalar", callback_data: 'admin:cards'),
             InlineKeyboardButton::make("Category", callback_data: 'admin:categories')
         );
     }
@@ -60,6 +60,15 @@ class InlineKeyboards
         );
     }
 
+    public static function wordMenu()
+    {
+        return InlineKeyboardMarkup::make()
+        ->addRow(
+            InlineKeyboardButton::make("Delete", callback_data: 'word:delete'),
+            InlineKeyboardButton::make("Update", callback_data: 'word:update'),
+            InlineKeyboardButton::make("Add Category", callback_data: 'word:add')
+        );
+    }
 
     public static function categoryKey()
     {
@@ -67,10 +76,10 @@ class InlineKeyboards
         $categories = [];
 
         foreach (WordCategories::get() as $category) {
-            $regions[] = InlineKeyboardButton::make(
+            $categories[] = InlineKeyboardButton::make(
                 text: $category->title_uz, callback_data: 'cate' . $category->id
             );
-            if (count($regions) == 2) {
+            if (count($categories) == 2) {
                 $inlineKeyboardMarkup->addRow(...$categories);
                 $categories = [];
             }
