@@ -3,6 +3,8 @@
 namespace App\TelegramBot\Conversations\Admin;
 
 use App\Models\Word;
+use App\TelegramBot\Admin\Words\WordAdmin;
+use Exception;
 use Illuminate\Support\Facades\Storage;
 use SergiX44\Nutgram\Conversations\Conversation;
 use SergiX44\Nutgram\Nutgram;
@@ -46,77 +48,114 @@ class WordCreateConversation extends Conversation
     {
         $this->translations['uz'] = $bot->message()->text;
         $bot->sendMessage("So`zni rasmini jonating");
-        $this->next('sixthStep');
+        $this->next('uploadImageStep');
     }
 
-    public function sixthStep(Nutgram $bot)
+    public function uploadImageStep(Nutgram $bot)
     {
         // Save the image file ID (if available)
         $this->image = $bot->message()->photo[0]->file_id ?? null;
 
+        if ($this->image) {
+            // Process image
+            $this->processAndStoreImage($bot);
+        } else {
+            $bot->sendMessage("Rasm jonatilmadi. Iltimos qayta urinib ko`ring.");
+            return;
+        }
+
         // Request audio or URL for pronunciation
         $bot->sendMessage("So`zni o`qlish ovazni yoki URL jonating");
-        $this->next('seventhStep');
+        $this->next('uploadAudioStep');
     }
 
-    public function seventhStep(Nutgram $bot)
+    public function uploadAudioStep(Nutgram $bot)
     {
         // Save the audio file ID or URL for pronunciation
         $this->audio = $bot->message()->voice->file_id ?? $bot->message()->text;
+
+        if ($this->audio) {
+            // Process audio
+            $this->processAndStoreAudio($bot);
+        } else {
+            $bot->sendMessage("Ovoz yoki URL jonatilmadi. Iltimos qayta urinib ko`ring.");
+            return;
+        }
 
         // Process and store collected data
         $this->processAndStoreData($bot);
     }
 
+    private function processAndStoreImage(Nutgram $bot)
+    {
+        $photoFile = $bot->getFile($this->image);
+        $filePath = $photoFile->file_path;
+        $token = env('TELEGRAM_TOKEN');
+
+        // Create the URL to download the file
+        $photoUrl = "https://api.telegram.org/file/bot{$token}/{$filePath}";
+
+        // Download the file content
+        $photoContent = file_get_contents($photoUrl);
+
+        if ($photoContent) {
+            // Generate unique filename
+            $photoFileName = uniqid('photo_', true) . '.jpg';
+
+            // Define the local path to save the file
+            $localFilePath = storage_path('app/public/words/' . $photoFileName);
+
+            // Ensure the directory exists
+            if (!file_exists(dirname($localFilePath))) {
+                mkdir(dirname($localFilePath), 0755, true);
+            }
+
+            // Save the file locally
+            file_put_contents($localFilePath, $photoContent);
+
+            // Update $this->image with the new filename
+            $this->image = $photoFileName;
+
+            return $localFilePath;
+        } else {
+            throw new Exception("Rasm yuklab olinmadi. Iltimos qayta urinib ko'ring.");
+        }
+    }
+
+    private function processAndStoreAudio(Nutgram $bot)
+    {
+        if (filter_var($this->audio, FILTER_VALIDATE_URL)) {
+            // Handle audio URL directly by storing the URL itself
+            $audioFileName = $this->audio;
+
+            $audioContent = file_get_contents($this->audio);
+            if ($audioContent) {
+                $audioFileName = uniqid('audio_', true) . '.ogg';
+                Storage::disk('public/word-audio')->put($audioFileName, $audioContent);
+                $this->audio = $audioFileName;
+            } else {
+                $bot->sendMessage("Ovoz URL yuklab olinmadi. Iltimos qayta urinib ko`ring.");
+            }
+        } else {
+            $audioFile = $bot->getFile($this->audio);
+
+            // Assuming the `getFile` method returns a file ID or file object with a `file_path` property
+            $audioUrl = 'https://api.telegram.org/file/bot' . env('TELEGRAM_TOKEN') . '/' . $audioFile->file_path;
+
+            $audioContent = file_get_contents($audioUrl);
+
+            if ($audioContent) {
+                $audioFileName = uniqid('audio_', true) . '.ogg';
+                Storage::disk('public/word-audio')->put($audioFileName, $audioContent);
+                $this->audio = $audioFileName;
+            } else {
+                $bot->sendMessage("Ovoz yuklab olinmadi. Iltimos qayta urinib ko`ring.");
+            }
+        }
+    }
+
     private function processAndStoreData(Nutgram $bot)
     {
-        // Validate and process image if available
-        if ($this->image) {
-            $photoFile = $bot->getFile($this->image);
-            $photoUrl = $bot->getDownloadUrl($photoFile);
-            $photoContent = file_get_contents($photoUrl);
-
-            if ($photoContent) {
-                // Store the photo using Laravel Storage
-                $photoFileName = uniqid('photo_', true) . '.jpg'; // Generate unique filename
-                Storage::disk('telegram')->put($photoFileName, $photoContent);
-                $this->image = $photoFileName;
-            } else {
-                // Handle photo download error (optional)
-                $bot->sendMessage("Rasm yuklab olinmadi. Iltimos qayta urinib ko`ring.");
-                return;
-            }
-        }
-
-        if ($this->audio) {
-
-            if (filter_var($this->audio, FILTER_VALIDATE_URL)) {
-                
-                $audioContent = file_get_contents($this->audio);
-                if ($audioContent) {
-                    $audioFileName = uniqid('audio_', true) . '.ogg';
-                    Storage::disk('telegram')->put($audioFileName, $audioContent);
-                    $this->audio = $audioFileName;
-                } else {
-                    $bot->sendMessage("Ovoz URL yuklab olinmadi. Iltimos qayta urinib ko`ring.");
-                    return;
-                }
-            } else {
-                $audioFile = $bot->getFile($this->audio);
-                $audioUrl = $bot->getDownloadUrl($audioFile);
-                $audioContent = file_get_contents($audioUrl);
-
-                if ($audioContent) {
-                    $audioFileName = uniqid('audio_', true) . '.ogg';
-                    Storage::disk('telegram')->put($audioFileName, $audioContent);
-                    $this->audio = $audioFileName;
-                } else {
-                    $bot->sendMessage("Ovoz yuklab olinmadi. Iltimos qayta urinib ko`ring.");
-                    return;
-                }
-            }
-        }
-
         // Save the collected data to the database
         Word::create([
             'name' => $this->name,
@@ -128,6 +167,8 @@ class WordCreateConversation extends Conversation
 
         // Inform the user that the word has been successfully created
         $bot->sendMessage("So`z muvaffaqiyatli yaratildi.");
+        $wordAdmin = new WordAdmin();
+        $wordAdmin($bot);
         $this->end();
     }
 }

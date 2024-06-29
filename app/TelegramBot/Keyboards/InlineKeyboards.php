@@ -66,7 +66,7 @@ class InlineKeyboards
         ->addRow(
             InlineKeyboardButton::make("Delete", callback_data: 'word:delete'),
             InlineKeyboardButton::make("Update", callback_data: 'word:update'),
-            InlineKeyboardButton::make("Add Category", callback_data: 'word:add')
+            InlineKeyboardButton::make("Add Word", callback_data: 'word:add')
         );
     }
 

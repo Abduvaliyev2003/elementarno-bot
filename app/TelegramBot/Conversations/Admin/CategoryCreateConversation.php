@@ -59,7 +59,7 @@ class  CategoryCreateConversation extends Conversation
     WordCategories::query()->create([
         'title_uz' => $this->lang['lang_uz'],
         'title_ru' => $this->lang['lang_ru'],
-        'file_url' => $fileUrl,
+        'image' => $fileUrl,
     ]);
 
     $bot->sendMessage("Karta yaratildi");
@@ -80,7 +80,7 @@ class  CategoryCreateConversation extends Conversation
     $fileUrl = "https://api.telegram.org/file/bot{$token}/{$filePath}";
 
     // Define the local path to save the file
-    $localFilePath = storage_path('app/public/' . basename($filePath));
+    $localFilePath = storage_path('app/public/telegram_category' . basename($filePath));
 
     // Download and save the file locally
     file_put_contents($localFilePath, file_get_contents($fileUrl));

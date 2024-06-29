@@ -152,7 +152,7 @@ class WordUpdateConversation extends Conversation
             if ($photoContent) {
                 // Store the photo using Laravel Storage
                 $photoFileName = uniqid('photo_', true) . '.jpg'; // Generate unique filename
-                Storage::disk('telegram')->put($photoFileName, $photoContent);
+                Storage::disk('public/words/')->put($photoFileName, $photoContent);
                 $this->selectedWord->image = $photoFileName;
             } else {
                 // Handle photo download error (optional)
@@ -170,7 +170,7 @@ class WordUpdateConversation extends Conversation
                 $audioContent = file_get_contents($this->selectedWord->audio);
                 if ($audioContent) {
                     $audioFileName = uniqid('audio_', true) . '.ogg';
-                    Storage::disk('telegram')->put($audioFileName, $audioContent);
+                    Storage::disk('public/word-audio')->put($audioFileName, $audioContent);
                     $this->selectedWord->audio = $audioFileName;
                 } else {
                     // Handle audio URL download error (optional)
@@ -185,7 +185,7 @@ class WordUpdateConversation extends Conversation
 
                 if ($audioContent) {
                     $audioFileName = uniqid('audio_', true) . '.ogg';
-                    Storage::disk('telegram')->put($audioFileName, $audioContent);
+                    Storage::disk('public/word-audio')->put($audioFileName, $audioContent);
                     $this->selectedWord->audio = $audioFileName;
                 } else {
                     // Handle audio file ID download error (optional)
