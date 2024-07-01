@@ -14,6 +14,7 @@ class Word extends Model
         'pronunciation',
         'translations', // JSON column
         'image',
+        'category_id',
         'audio',
     ];
 

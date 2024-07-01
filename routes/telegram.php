@@ -56,12 +56,23 @@ $bot->onText('Biz haqimizda', function(Nutgram $bot){
 
 });
 
+$bot->onText('Buyurtma berish', function(Nutgram $bot){
+    $bot->sendMessage(
+        text: 'https://telegra.ph/Elementarno-05-23',
+        reply_markup: InlineKeyboardMarkup::make()
+            ->addRow(
+                InlineKeyboardButton::make('Open', web_app: WebAppInfo::make('https://www.elementarnoo.uz/'))
+            )
+    );
+
+});
+
 $bot->onText('Kartichkalar', function(Nutgram $bot){
     $bot->sendMessage(
         text: 'https://telegra.ph/Elementarno-05-23',
         reply_markup: InlineKeyboardMarkup::make()
             ->addRow(
-                InlineKeyboardButton::make('Open', web_app: WebAppInfo::make('https://666ed8f43d4ad0c9edaa6916--capable-sopapillas-c7ca1a.netlify.app/'))
+                InlineKeyboardButton::make('Open', web_app: WebAppInfo::make('https://ed9c-213-230-76-181.ngrok-free.app'))
             )
     );
 });
@@ -75,6 +86,10 @@ $bot->onText('🇺🇿🇷🇺 Tilni o‘zgartirish', function (Nutgram $bot) {
 
 $bot->onText('🏙 Shaharni o‘zgartirish', function (Nutgram $bot) {
     $bot->sendMessage(text: __('telegram.select_Address'), reply_markup: InlineKeyboards::address('region '));
+});
+
+$bot->onText('👤 Ismni o‘zgartirish', function (Nutgram $bot) {
+    ChangeNameConversation::begin($bot);
 });
 
 $bot->onText('👤 Ismni o‘zgartirish', function (Nutgram $bot) {
