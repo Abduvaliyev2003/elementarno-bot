@@ -169,8 +169,8 @@ class WordUpdateConversation extends Conversation
                 // Example: Fetch audio content from URL and store using Laravel Storage
                 $audioContent = file_get_contents($this->selectedWord->audio);
                 if ($audioContent) {
-                    $audioFileName = uniqid('audio_', true) . '.ogg';
-                    Storage::disk('public/word-audio')->put($audioFileName, $audioContent);
+                    $audioFileName = 'word-audio/' . uniqid('audio_', true) . '.ogg';
+                    Storage::disk('public')->put($audioFileName, $audioContent);
                     $this->selectedWord->audio = $audioFileName;
                 } else {
                     // Handle audio URL download error (optional)
@@ -184,8 +184,8 @@ class WordUpdateConversation extends Conversation
                 $audioContent = file_get_contents($audioUrl);
 
                 if ($audioContent) {
-                    $audioFileName = uniqid('audio_', true) . '.ogg';
-                    Storage::disk('public/word-audio')->put($audioFileName, $audioContent);
+                    $audioFileName = 'word-audio/' . uniqid('audio_', true) . '.ogg';
+                    Storage::disk('public')->put($audioFileName, $audioContent);
                     $this->selectedWord->audio = $audioFileName;
                 } else {
                     // Handle audio file ID download error (optional)

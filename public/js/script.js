@@ -11,9 +11,14 @@ document.getElementById('menu-button').addEventListener('click', function() {
     }
 });
 
-function playAudio() {
-    var audio = document.getElementById('audio');
-    audio.play();
+function playAudio(id) {
+    var audio = document.getElementById(`audio-${id}`);
+    if (audio) {
+        audio.play();
+    } else {
+        console.error('Audio element not found');
+    }
+
   }
 
 searchInput.addEventListener('input', function() {

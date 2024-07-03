@@ -1,16 +1,23 @@
 <?php
 return [
-    'start_message_new_user' => "👋Assalomu alaykum, Botdan toliq foydalanish uchin ro‘yxatdan o‘ting",
-    'start_message' => "👋Assalomu alaykum, Kerakli bo‘limni tanlang",
-    'error_number' => "✅ Faqat telefon raqam qabul qilinadi.",
-    'success_number' => "✍️Telefon raqam saqlandi, endi toliq ismingizni yozib yuboring",
-    'success_end_register' => "✅Toliq ro‘yxatdan o‘tingiz. Tez orada profil aktivlashadi",
-    'buttons' => [
 
-        'send_contact' => "📲Telefon raqam yuborish",
-    ],
+    'start_message_new_user' => "👋 Здравствуйте, для полноценного использования бота зарегистрируйтесь",
+'start_message' => "👋 Здравствуйте, выберите необходимый раздел",
+'error_number' => "✅ Принимается только номер телефона.",
+'success_number' => "✍️ Номер телефона сохранен, теперь введите свое полное имя",
+'success_address' => "теперь введите свое полное имя",
+'success_end_register' => "✅ Вы успешно зарегистрировались. Ваш профиль будет активирован в ближайшее время",
+'menu' =>  "Выберите раздел:",
+'buttons' => [
+    'send_contact' => "📲 Отправить номер телефона",
+],
+'yes' => '✅ Да',
+'no' => '❌ Нет',
 
-    'yes' => '✅Ha',
-    'no' => '❌Yoq',
+'cards_message' => 'Текст для раздела Карты',
+'about_us_message' => 'Текст для раздела О нас',
+'order_message' => 'Текст для раздела Разместить заказ',
+'select_lang' => 'Выберите язык',
+'select_Address' => 'Выберите адрес',
 
 ];

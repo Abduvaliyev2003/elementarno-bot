@@ -2,6 +2,7 @@
 
 namespace App\TelegramBot\Conversations;
 
+use App\Models\User;
 use App\TelegramBot\Actions\SetUserPage;
 use App\TelegramBot\Keyboards\ReplyMarkupKeyboards;
 use SergiX44\Nutgram\Conversations\Conversation;
@@ -17,9 +18,12 @@ class  MenuConversation extends Conversation
     public function start(Nutgram $bot):void
     {
         SetUserPage::set($bot->chat()->id, 'menu');
+        $telegramId = $bot->chatId();
+        $language = User::findByTelegramId($telegramId);
+        app()->setLocale($language);
         $bot->sendMessage(
             text:__('telegram.menu'),
-            reply_markup: ReplyMarkupKeyboards::menu()
+            reply_markup: ReplyMarkupKeyboards::menu($bot)
         );
         $this->end();
     }

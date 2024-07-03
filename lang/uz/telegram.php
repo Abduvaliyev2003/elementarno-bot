@@ -6,11 +6,14 @@ return [
     'success_number' => "✍️Telefon raqam saqlandi, endi toliq ismingizni yozib yuboring",
     'success_end_register' => "✅Toliq ro‘yxatdan o‘tingiz. Tez orada profil aktivlashadi",
     'buttons' => [
-        
         'send_contact' => "📲Telefon raqam yuborish",
     ],
-
     'yes' => '✅Ha',
     'no' => '❌Yoq',
 
+    'cards_message' => 'Kartichkalar bo‘limi uchun matn',
+'about_us_message' => 'Biz haqimizda bo‘limi uchun matn',
+'order_message' => 'Buyurtma berish bo‘limi uchun matn',
+'select_lang' => 'Tilni tanlang',
+'select_Address' => 'Manzilni tanlang',
 ];

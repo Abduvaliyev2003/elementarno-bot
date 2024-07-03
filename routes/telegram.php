@@ -45,7 +45,7 @@ $bot->registerCommand(StartCommand::class)->description('The start command!')->s
 ]);
 
 
-$bot->onText('Biz haqimizda', function(Nutgram $bot){
+$bot->onText('Biz haqimizda|о нас', function(Nutgram $bot){
     $bot->sendMessage(
         text: 'https://telegra.ph/Elementarno-05-23',
         reply_markup: InlineKeyboardMarkup::make()
@@ -56,7 +56,7 @@ $bot->onText('Biz haqimizda', function(Nutgram $bot){
 
 });
 
-$bot->onText('Buyurtma berish', function(Nutgram $bot){
+$bot->onText('Buyurtma berish|Разместить заказ', function(Nutgram $bot){
     $bot->sendMessage(
         text: 'https://telegra.ph/Elementarno-05-23',
         reply_markup: InlineKeyboardMarkup::make()
@@ -67,7 +67,7 @@ $bot->onText('Buyurtma berish', function(Nutgram $bot){
 
 });
 
-$bot->onText('Kartichkalar', function(Nutgram $bot){
+$bot->onText('Kartichkalar|Карты', function(Nutgram $bot){
     $bot->sendMessage(
         text: 'https://telegra.ph/Elementarno-05-23',
         reply_markup: InlineKeyboardMarkup::make()
@@ -76,27 +76,26 @@ $bot->onText('Kartichkalar', function(Nutgram $bot){
             )
     );
 });
-$bot->onText('⚙️ Sozlamalar', function (Nutgram $bot) {
+$bot->onText('⚙️ Sozlamalar|⚙️ Настройки', function (Nutgram $bot) {
     SetUserPage::set($bot->chat()->id, 'setting');
     ReplyMarkupKeyboards::setting($bot);
 });
-$bot->onText('🇺🇿🇷🇺 Tilni o‘zgartirish', function (Nutgram $bot) {
+$bot->onText('🇺🇿🇷🇺 Tilni o‘zgartirish|🇺🇿🇷🇺 Изменить язык', function (Nutgram $bot) {
+    app()->setLocale($this->lang['lang']);
     $bot->sendMessage(text: __('telegram.select_lang'), reply_markup: InlineKeyboards::language());
 });
 
-$bot->onText('🏙 Shaharni o‘zgartirish', function (Nutgram $bot) {
+$bot->onText('🏙 Shaharni o‘zgartirish|🏙 Изменить город', function (Nutgram $bot) {
     $bot->sendMessage(text: __('telegram.select_Address'), reply_markup: InlineKeyboards::address('region '));
 });
 
-$bot->onText('👤 Ismni o‘zgartirish', function (Nutgram $bot) {
+$bot->onText('👤 Ismni o‘zgartirish|👤 Изменить имя', function (Nutgram $bot) {
     ChangeNameConversation::begin($bot);
 });
 
-$bot->onText('👤 Ismni o‘zgartirish', function (Nutgram $bot) {
-    ChangeNameConversation::begin($bot);
-});
 
-$bot->onText('⬅️ Orqaga', function (Nutgram $bot) {
+
+$bot->onText('⬅️ Orqaga|⬅️ Назад', function (Nutgram $bot) {
     Back::backPage($bot);
 });
 $bot->onCallbackQueryData('lang: {param}', function (Nutgram $bot, $param) {
@@ -110,7 +109,7 @@ $bot->onCallbackQueryData('region {param}', function (Nutgram $bot, $param) {
     ReplyMarkupKeyboards::setting($bot);
 });
 
-$bot->onText('🚪 Chiqish', function (Nutgram $bot) {
+$bot->onText('🚪 Chiqish|🚪 Выйти', function (Nutgram $bot) {
     (new UserRepository())->logout($bot->chat()->id);
     (new StartCommand())->handle($bot);
 });

@@ -11,7 +11,7 @@ class HomeController
 {
     public function index()
     {
-        $categories = WordCategories::get();
+        $categories = WordCategories::with('words')->get();
 
         return view('pages/home', compact('categories'));
     }
@@ -25,5 +25,5 @@ class HomeController
         return view('pages/word-lists', compact('words', 'category', 'categories'));
     }
 
-    
+
 }

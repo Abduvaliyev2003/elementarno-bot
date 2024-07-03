@@ -2,15 +2,16 @@
 
 
 @section('main')
-
+<button id="menu-button">Menu</button>
+@include('components.category-list', ['categories' => $categories])
 <div class="word-container">
     <div class="word-item">
         <img class="word-image" src="/img/Rectangle 91.png" alt="Image">
         <div class="word-text">
             <h1 class="word-title">You</h1>
             <div class="transcription">
-                <h2>ю</h2>
-                <p>|</p>
+                {{-- <h2>ю</h2>
+                <p>|</p> --}}
                 <h2 class="pron">[ ju: ]</h2>
             </div>
         </div>

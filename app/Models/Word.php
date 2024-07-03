@@ -22,4 +22,10 @@ class Word extends Model
         'translations' => 'array', // Cast translations to array
     ];
 
+    public function category()
+    {
+        return $this->belongsTo(WordCategories::class, 'category_id');
+    }
+
+
 }

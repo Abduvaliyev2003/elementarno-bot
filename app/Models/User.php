@@ -50,4 +50,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public static function findByTelegramId($telegramId)
+    {
+        $user = self::where('telegram_id', $telegramId)->first();
+        return $user ? $user->lang : 'uz';
+    }
 }

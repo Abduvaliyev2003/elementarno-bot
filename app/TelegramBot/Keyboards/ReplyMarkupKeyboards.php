@@ -2,13 +2,14 @@
 
 namespace App\TelegramBot\Keyboards;
 
+use App\Models\User;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
 
 class ReplyMarkupKeyboards
 {
-    protected static $menus  = [
+    protected static $menus = [
         [
             'uz' => 'Kartichkalar',
             'en' => 'card',
@@ -40,35 +41,37 @@ class ReplyMarkupKeyboards
             'ru' => '⚙️ Настройки'
         ],
     ];
-    protected static $settingMenu  = [
+
+    protected static $settingMenu = [
         [
             'uz' => '⬅️ Orqaga',
             'ru' => '⬅️ Назад'
         ],
         [
             'uz' => '👤 Ismni o‘zgartirish',
-            'ru' => '👤 Ismni o‘zgartirish'
+            'ru' => '👤 Изменить имя'
         ],
         [
             'uz' => '🏙 Shaharni o‘zgartirish',
-            'ru' => '🏙 Shaharni o‘zgartirish'
+            'ru' => '🏙 Изменить город'
         ],
         [
             'uz' => '🇺🇿🇷🇺 Tilni o‘zgartirish',
-            'ru' => '🇺🇺🇿🇷🇺 Изменить язык'
+            'ru' => '🇺🇿🇷🇺 Изменить язык'
         ],
         [
             'uz' => '🚪 Chiqish',
-            'ru' => '🚪 Chiqish'
+            'ru' => '🚪 Выйти'
         ],
     ];
+
     public static function language(): ReplyKeyboardMarkup
     {
         return ReplyKeyboardMarkup::make(
             resize_keyboard: true,
             one_time_keyboard: true,
         )->addRow(
-            KeyboardButton::make("🇺🇿O'zbekcha"),
+            KeyboardButton::make('🇺🇿O\'zbekcha'),
             KeyboardButton::make('🇷🇺Русский'),
         );
     }
@@ -80,27 +83,34 @@ class ReplyMarkupKeyboards
             one_time_keyboard: true
         )->addRow(
             KeyboardButton::make(
-                text: $text,
+                text: $text ?? __('telegram.buttons.send_contact'),
                 request_contact: true
             )
         );
     }
 
-    public static function menu(): ReplyKeyboardMarkup
+    public static function menu(Nutgram $bot): ReplyKeyboardMarkup
     {
-        return self::createKeyboard(self::$menus);
+        return self::createKeyboard(self::$menus, $bot);
     }
 
     public static function setting($bot)
     {
-         $bot->sendMessage(
-            text: 'Harakatni tanlang:',
-            reply_markup: self::createKeyboard(self::$settingMenu)
+        $telegramId = $bot->chatId();
+        $language = User::findByTelegramId($telegramId);
+
+        $text = $language == 'ru' ? 'Выберите действие' : 'Harakatni tanlang';
+        $bot->sendMessage(
+            text: $text,
+            reply_markup: self::createKeyboard(self::$settingMenu, $bot)
         );
+
     }
 
-    private static function createKeyboard(array $menusData): ReplyKeyboardMarkup
+    private static function createKeyboard(array $menusData, $bot): ReplyKeyboardMarkup
     {
+        $telegramId = $bot->chatId();
+        $language = User::findByTelegramId($telegramId);
         $replyKeyboardMarkup = ReplyKeyboardMarkup::make(
             resize_keyboard: true,
             one_time_keyboard: true
@@ -109,7 +119,7 @@ class ReplyMarkupKeyboards
         $menus = [];
         foreach ($menusData as $menu) {
             $menus[] = KeyboardButton::make(
-                text: $menu['uz']
+                text: $language == 'ru' ? $menu['ru'] : $menu['uz']  // Rus tiliga moslashtrildi
             );
             if (count($menus) == 2) {
                 $replyKeyboardMarkup->addRow(...$menus);
@@ -123,5 +133,4 @@ class ReplyMarkupKeyboards
 
         return $replyKeyboardMarkup;
     }
-
 }

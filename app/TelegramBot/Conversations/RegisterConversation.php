@@ -7,6 +7,7 @@ use App\Models\User;
 use App\TelegramBot\Actions\SetLanguage;
 use App\TelegramBot\Keyboards\InlineKeyboards;
 use App\TelegramBot\Keyboards\ReplyMarkupKeyboards;
+use Illuminate\Support\Facades\App;
 use Psr\SimpleCache\InvalidArgumentException;
 use SergiX44\Nutgram\Conversations\Conversation;
 use SergiX44\Nutgram\Nutgram;
@@ -22,13 +23,12 @@ class RegisterConversation extends Conversation
     public array $data = [];
     public array $region = [];
     public array $lang = [];
+
     /**
      * @throws InvalidArgumentException
      */
-
     public function start(Nutgram $bot): void
     {
-
         $first_name = $bot->user()->first_name;
         $bot->sendMessage(
             text: 'Assalomu alaykum ' . $first_name,
@@ -39,13 +39,15 @@ class RegisterConversation extends Conversation
 
     public function secondStep(Nutgram $bot): void
     {
-        if("🇺🇿O'zbekcha" ==  $bot->message()->text)
-        {
-           $this->lang['lang'] = 'uz';
-        } else if("🇷🇺Русский" ==  $bot->message()->text)
-        {
+        if ("🇺🇿O'zbekcha" == $bot->message()->text) {
+            $this->lang['lang'] = 'uz';
+        } else if ("🇷🇺Русский" == $bot->message()->text) {
             $this->lang['lang'] = 'ru';
         }
+
+        // Foydalanuvchi tanlagan tilga ko'ra xabarlarni lokalizatsiya qilish
+        App::setLocale($this->lang['lang']);
+
         $bot->sendMessage(
             text: __('telegram.start_message_new_user'),
             reply_markup: ReplyMarkupKeyboards::phone(__('telegram.buttons.send_contact'))
@@ -58,6 +60,7 @@ class RegisterConversation extends Conversation
      */
     public function secondThird(Nutgram $bot): void
     {
+        // app()->setLocale($this->lang['lang']);
         if ($bot->message()->getType() != MessageType::CONTACT) {
             $bot->sendMessage(__('telegram.error_number'));
             $this->next('secondStep');
@@ -73,7 +76,7 @@ class RegisterConversation extends Conversation
             reply_markup: ReplyKeyboardRemove::make(true),
         )?->delete();
         $bot->sendMessage(
-            text:__('telegram.success_number'),
+            text: __('telegram.success_number'),
             reply_markup: InlineKeyboards::address('region_')
         );
         $this->next('setAddress');
@@ -82,10 +85,10 @@ class RegisterConversation extends Conversation
     /**
      * @throws InvalidArgumentException
      */
-
     public function setAddress(Nutgram $bot): void
     {
         $region = $bot->callbackQuery()->data;
+        app()->setLocale($this->lang['lang']);
         $bot->deleteMessage($bot->chatId(), $bot->messageId());
         $this->region['region_id'] = str_replace('region_', '', $region);
         $bot->sendMessage(text: __('telegram.success_address'));
@@ -94,11 +97,13 @@ class RegisterConversation extends Conversation
 
     public function setName(Nutgram $bot): void
     {
+        // app()->setLocale($this->lang['lang']);
         $patient = User::where('phone', $this->data['phone'])
             ->whereNull('telegram_id')->first();
         if ($patient) {
             $patient->update([
-                'telegram_id' => $bot->chatId()
+                'telegram_id' => $bot->chatId(),
+                'lang' => $this->lang['lang']  // Tilni yangilash
             ]);
         } else {
             User::create([
@@ -106,14 +111,12 @@ class RegisterConversation extends Conversation
                 'name' => $bot->message()->text,
                 'phone' => $this->data['phone'],
                 'address' => $this->region['region_id'],
-                'lang' =>  $this->lang['lang'],
+                'lang' => $this->lang['lang'],
                 'is_verified' => false
             ]);
         }
         $bot->sendMessage(text: __('telegram.success_end_register'));
-        MenuConversation::begin( bot: $bot,
-        userId: $bot->userId(),
-        chatId: $bot->chatId(),);
+        MenuConversation::begin($bot, $bot->userId(), $bot->chatId());
         $this->end();
     }
 }

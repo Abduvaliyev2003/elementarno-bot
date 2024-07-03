@@ -102,21 +102,17 @@ class WordCreateConversation extends Conversation
             // Generate unique filename
             $photoFileName = uniqid('photo_', true) . '.jpg';
 
-            // Define the local path to save the file
-            $localFilePath = storage_path('app/public/words/' . $photoFileName);
+            // Define the path within the public disk
+            $storagePath = 'words/' . $photoFileName;
 
-            // Ensure the directory exists
-            if (!file_exists(dirname($localFilePath))) {
-                mkdir(dirname($localFilePath), 0755, true);
-            }
-
-            // Save the file locally
-            file_put_contents($localFilePath, $photoContent);
+            // Save the file to the public disk
+            Storage::disk('public')->put($storagePath, $photoContent);
 
             // Update $this->image with the new filename
-            $this->image = $photoFileName;
+            $this->image = $storagePath;
 
-            return $localFilePath;
+            // Update $this->image with the new filename
+            return $storagePath;
         } else {
             throw new Exception("Rasm yuklab olinmadi. Iltimos qayta urinib ko'ring.");
         }
@@ -124,14 +120,15 @@ class WordCreateConversation extends Conversation
 
     private function processAndStoreAudio(Nutgram $bot)
     {
+        if( $bot->message()->text == '' || $bot->message()->text == null ){
         if (filter_var($this->audio, FILTER_VALIDATE_URL)) {
             // Handle audio URL directly by storing the URL itself
             $audioFileName = $this->audio;
 
             $audioContent = file_get_contents($this->audio);
             if ($audioContent) {
-                $audioFileName = uniqid('audio_', true) . '.ogg';
-                Storage::disk('public/word-audio')->put($audioFileName, $audioContent);
+                $audioFileName = 'word-audio/' . uniqid('audio_', true) . '.ogg';
+                Storage::disk('public')->put($audioFileName, $audioContent);
                 $this->audio = $audioFileName;
             } else {
                 $bot->sendMessage("Ovoz URL yuklab olinmadi. Iltimos qayta urinib ko`ring.");
@@ -145,13 +142,18 @@ class WordCreateConversation extends Conversation
             $audioContent = file_get_contents($audioUrl);
 
             if ($audioContent) {
-                $audioFileName = uniqid('audio_', true) . '.ogg';
-                Storage::disk('public/word-audio')->put($audioFileName, $audioContent);
+                $audioFileName = 'word-audio/' . uniqid('audio_', true) . '.ogg';
+                Storage::disk('public')->put($audioFileName, $audioContent);
                 $this->audio = $audioFileName;
             } else {
                 $bot->sendMessage("Ovoz yuklab olinmadi. Iltimos qayta urinib ko`ring.");
             }
         }
+       } else {
+           if(filter_var($this->audio, FILTER_VALIDATE_URL)) {
+               $this->audio = $bot->message()->text;
+           }
+       }
     }
 
     private function processAndStoreData(Nutgram $bot)

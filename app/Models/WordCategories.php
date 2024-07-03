@@ -15,4 +15,10 @@ class WordCategories extends Model
         'title_en',
         'image',
     ];
+
+    public function words()
+    {
+        return $this->hasMany(Word::class, 'category_id');
+    }
+
 }
