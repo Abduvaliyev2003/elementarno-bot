@@ -1,14 +1,15 @@
+
 <div id="word-section" class="word-section" style="display: none;">
-    <a href="{{ url('/') }}" class="word-block popular home" >
+    <a href="{{ url('/') . '/?lang=' . $lang}}"   class="word-block  popular home" >
         <i class="fas fa-home"></i>
-        <h4>Bosh sahifa</h4>
+        <h4>{{ $lang == 'ru' ?  "Главны мену" : "Bosh sahifa" }} </h4>
     </a>
     @foreach ($categories as $category)
-    <a href="{{ url('/word-category/'.$category->id) }}" class="word-block popular">
-        <h4>{{ $category->title_ru }}</h4>
+    <a href="{{ url('/word-category/'.$category->id) . '/?lang=' . $lang}}" class="word-block popular">
+        <h4>{{$lang == 'ru' ? $category->title_ru : $category->title_uz }}</h4>
         <div class="word-content">
             <img class="icon" src="{{ $category->image }}" alt="Icon">
-            <h1 class="word-count">100 Слово</h1>
+            <h1 class="word-count">100 {{ $lang == 'ru' ?  "Слово" : "Gap" }} </h1>
         </div>
     </a>
     @endforeach

@@ -2,16 +2,9 @@ const searchInput = document.getElementById('search-input');
 const searchResults = document.getElementById('search-results');
 
 
-document.getElementById('menu-button').addEventListener('click', function() {
-    var wordSection = document.getElementById('word-section');
-    if (wordSection.style.display === 'none' || wordSection.style.display === '') {
-        wordSection.style.display = 'grid';
-    } else {
-        wordSection.style.display = 'none';
-    }
-});
 
-function playAudio(id) {
+function playAudio(event,id) {
+    event.preventDefault()
     var audio = document.getElementById(`audio-${id}`);
     if (audio) {
         audio.play();
@@ -23,7 +16,7 @@ function playAudio(id) {
 
 searchInput.addEventListener('input', function() {
       const query = this.value.trim();
-
+      console.log(query)
       if (query.length === 0) {
           searchResults.innerHTML = '';
           return;
@@ -74,3 +67,12 @@ searchInput.addEventListener('input', function() {
           })
           .catch(error => console.error('Error:', error));
   });
+document.getElementById('menu-button').addEventListener('click', function() {
+    var wordSection = document.getElementById('word-section');
+    if (wordSection.style.display === 'none' || wordSection.style.display === '') {
+        wordSection.style.display = 'grid';
+    } else {
+        wordSection.style.display = 'none';
+    }
+});
+
