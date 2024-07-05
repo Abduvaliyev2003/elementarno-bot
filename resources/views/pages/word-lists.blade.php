@@ -1,7 +1,6 @@
 
 @extends('layout.app')
 
-
 @php
     app()->setlocale(request('lang') ?? 'ru');
     $lang =  app()->getLocale();
@@ -16,7 +15,7 @@
   @forelse ($words as $item)
   <a href={{ url('/word/'.$item->id) . '/?lang=' . $lang }} class="word-container">
     <div class="word-item">
-        <img class="word-image" src="/img/Rectangle 91.png" alt="Image">
+        <img class="word-image" src="https://a82f-213-230-118-217.ngrok-free.app/storage/{{$item->image}}" alt="Image">
         <div class="word-text">
             <h1 class="word-title">{{ $item->name }}</h1>
             <div class="transcription">

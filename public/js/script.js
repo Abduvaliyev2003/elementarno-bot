@@ -38,7 +38,7 @@ searchInput.addEventListener('input', function() {
 
                 const wordImage = document.createElement('img');
                 wordImage.classList.add('word-image');
-                wordImage.src = '/img/Rectangle 91.png';
+                wordImage.src = 'https://a82f-213-230-118-217.ngrok-free.app/storage/' + item.image;
                 wordImage.alt = 'Rasm';
 
                 const wordText = document.createElement('div');

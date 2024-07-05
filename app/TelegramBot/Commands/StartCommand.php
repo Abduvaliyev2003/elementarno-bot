@@ -11,7 +11,7 @@ use SergiX44\Nutgram\Handlers\Type\Command;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
-define('ADMIN_CHAT_ID',9738669553);
+define('ADMIN_CHAT_ID',973866955);
 class StartCommand extends Command
 {
     protected string $command  = 'start';

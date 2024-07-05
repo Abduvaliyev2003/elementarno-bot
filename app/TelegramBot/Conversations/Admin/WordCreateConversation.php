@@ -3,7 +3,9 @@
 namespace App\TelegramBot\Conversations\Admin;
 
 use App\Models\Word;
+use App\Models\WordCategories;
 use App\TelegramBot\Admin\Words\WordAdmin;
+use App\TelegramBot\Keyboards\InlineKeyboards;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use SergiX44\Nutgram\Conversations\Conversation;
@@ -16,6 +18,7 @@ class WordCreateConversation extends Conversation
     protected $translations = [];
     protected $image;
     protected $audio;
+    protected $categoryId;
 
     public function start(Nutgram $bot)
     {
@@ -44,9 +47,19 @@ class WordCreateConversation extends Conversation
         $this->next('fifthStep');
     }
 
+
+
     public function fifthStep(Nutgram $bot)
     {
         $this->translations['uz'] = $bot->message()->text;
+        InlineKeyboards::category($bot);
+        $this->next('categoryStep');
+    }
+
+    public function categoryStep(Nutgram $bot)
+    {
+        $this->categoryId = $bot->callbackQuery()->data;
+
         $bot->sendMessage("So`zni rasmini jonating");
         $this->next('uploadImageStep');
     }
@@ -54,7 +67,7 @@ class WordCreateConversation extends Conversation
     public function uploadImageStep(Nutgram $bot)
     {
         // Save the image file ID (if available)
-        $this->image = $bot->message()->photo[0]->file_id ?? null;
+        $this->image = $bot->message()->photo[0]->file_id ??  $bot->message()->document->file_id ?? null;
 
         if ($this->image) {
             // Process image
@@ -161,6 +174,7 @@ class WordCreateConversation extends Conversation
         // Save the collected data to the database
         Word::create([
             'name' => $this->name,
+            'category_id' => $this->categoryId,
             'pronunciation' => $this->pronunciation,
             'translations' => $this->translations,
             'image' => $this->image,
@@ -173,4 +187,10 @@ class WordCreateConversation extends Conversation
         $wordAdmin($bot);
         $this->end();
     }
+
+
+
+
 }
+
+

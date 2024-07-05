@@ -70,14 +70,14 @@ class InlineKeyboards
         );
     }
 
-    public static function categoryKey()
+    public static function categoryKey($call  = 'cate')
     {
         $inlineKeyboardMarkup = InlineKeyboardMarkup::make();
         $categories = [];
 
         foreach (WordCategories::get() as $category) {
             $categories[] = InlineKeyboardButton::make(
-                text: $category->title_uz, callback_data: 'cate' . $category->id
+                text: $category->title_uz, callback_data: $call . $category->id
             );
             if (count($categories) == 2) {
                 $inlineKeyboardMarkup->addRow(...$categories);
@@ -90,5 +90,30 @@ class InlineKeyboards
         }
 
         return $inlineKeyboardMarkup;
+    }
+
+
+    public static function category($bot)
+    {
+        $inlineKeyboardMarkup = InlineKeyboardMarkup::make();
+        $categories = [];
+
+        foreach (WordCategories::get() as $category) {
+            $categories[] = InlineKeyboardButton::make(
+                text: $category->title_uz, callback_data: $category->id
+            );
+            if (count($categories) == 2) {
+                $inlineKeyboardMarkup->addRow(...$categories);
+                $categories = [];
+            }
+        }
+
+        if (count($categories)) {
+            $inlineKeyboardMarkup->addRow(...$categories);
+        }
+
+
+        $bot->sendMessage('Soz turini tanlang:', reply_markup: $inlineKeyboardMarkup);
+
     }
 }

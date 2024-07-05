@@ -74,7 +74,7 @@ $bot->onText('Kartichkalar|Карты', function(Nutgram $bot){
         text: 'https://telegra.ph/Elementarno-05-23',
         reply_markup: InlineKeyboardMarkup::make()
             ->addRow(
-                InlineKeyboardButton::make('Open', 'http://127.0.0.1:8000/' . '?lang='. $language )
+                InlineKeyboardButton::make('Open', web_app: WebAppInfo::make('https://a82f-213-230-118-217.ngrok-free.app' . '?lang='. $language ))
             )
     );
 });
@@ -83,7 +83,9 @@ $bot->onText('⚙️ Sozlamalar|⚙️ Настройки', function (Nutgram $b
     ReplyMarkupKeyboards::setting($bot);
 });
 $bot->onText('🇺🇿🇷🇺 Tilni o‘zgartirish|🇺🇿🇷🇺 Изменить язык', function (Nutgram $bot) {
-      app()->setLocale($this->lang['lang']);
+    $telegramId = $bot->chatId();
+    $language = User::findByTelegramId($telegramId);
+      app()->setLocale($language);
     $bot->sendMessage(text: __('telegram.select_lang'), reply_markup: InlineKeyboards::language());
 });
 

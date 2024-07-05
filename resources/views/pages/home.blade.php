@@ -32,7 +32,7 @@
         @foreach ($category->words->slice(0, 3) as $word)
              <a href={{ url('/word/'.$word->id) . '/?lang=' . $lang }} class="word-container" >
                 <div class="word-item">
-                    <img class="word-image" src="http://127.0.0.1:8000/storage/{{$word->image}}" alt="Image">
+                    <img class="word-image" src="https://a82f-213-230-118-217.ngrok-free.app/storage/{{$word->image}}" alt="Image">
                     <div class="word-text">
                         <h1 class="word-title">{{ $word->name }}</h1>
                         <div class="transcription">

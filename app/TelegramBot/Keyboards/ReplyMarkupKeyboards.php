@@ -31,11 +31,6 @@ class ReplyMarkupKeyboards
             'ru' => 'Разместить заказ'
         ],
         [
-            'uz' => '⬅️ Orqaga',
-            'en' => '⬅️ Back',
-            'ru' => '⬅️ Назад'
-        ],
-        [
             'uz' => '⚙️ Sozlamalar',
             'en' => '⚙️ Settings',
             'ru' => '⚙️ Настройки'
