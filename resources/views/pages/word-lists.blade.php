@@ -15,7 +15,7 @@
   @forelse ($words as $item)
   <a href={{ url('/word/'.$item->id) . '/?lang=' . $lang }} class="word-container">
     <div class="word-item">
-        <img class="word-image" src="https://a82f-213-230-118-217.ngrok-free.app/storage/{{$item->image}}" alt="Image">
+        <img class="word-image" src="{{ env('APP_URL') }}/storage/{{$item->image}}" alt="Image">
         <div class="word-text">
             <h1 class="word-title">{{ $item->name }}</h1>
             <div class="transcription">
@@ -31,9 +31,10 @@
         <div class="translation-item">
             <h2>{{$item->translations['uz']}}</h2>
         </div>
-        <div class="play-content">
-            <img class="play-button" src="/icons/Play.png" alt="Play Button" onclick="playAudio(event,{{ $item->id }})">
-            <audio id="audio-{{$item->id }}" src="{{ $item->audio }}"></audio>
+        <div class="play-content" onclick="event.stopPropagation();">
+            <button class="play-button" onclick="playAudio(event, '{{ $item->name }}')">
+                <img src="/icons/Play.png" alt="Play Button">
+            </button>
         </div>
     </div>
   </a>

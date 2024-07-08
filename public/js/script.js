@@ -11,7 +11,6 @@ function playAudio(event,id) {
     } else {
         console.error('Audio element not found');
     }
-
   }
 
 searchInput.addEventListener('input', function() {

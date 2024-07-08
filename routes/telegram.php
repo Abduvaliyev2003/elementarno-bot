@@ -74,7 +74,7 @@ $bot->onText('Kartichkalar|Карты', function(Nutgram $bot){
         text: 'https://telegra.ph/Elementarno-05-23',
         reply_markup: InlineKeyboardMarkup::make()
             ->addRow(
-                InlineKeyboardButton::make('Open', web_app: WebAppInfo::make('https://a82f-213-230-118-217.ngrok-free.app' . '?lang='. $language ))
+                InlineKeyboardButton::make('Open', web_app: WebAppInfo::make(env('APP_URL')  . '?lang='. $language ))
             )
     );
 });
