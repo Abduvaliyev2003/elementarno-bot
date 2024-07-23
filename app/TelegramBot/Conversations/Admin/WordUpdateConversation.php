@@ -3,6 +3,7 @@
 namespace App\TelegramBot\Conversations\Admin;
 
 use App\Models\Word;
+use App\TelegramBot\Keyboards\ReplyMarkupKeyboards;
 use Illuminate\Support\Facades\Storage;
 use SergiX44\Nutgram\Conversations\Conversation;
 use SergiX44\Nutgram\Nutgram;
@@ -15,14 +16,14 @@ class WordUpdateConversation extends Conversation
     protected $selectedWordId;
     protected $selectedWord;
     protected $currentPage = 1;
-    protected $wordsPerPage = 15;
+    protected $wordsPerPage = 3;
 
     public function start(Nutgram $bot)
     {
         $this->askForPage($bot);
     }
 
-    public function askForPage(Nutgram $bot)
+    public function askForPage(Nutgram $bot, $update = false)
 {
     // Paginate words
     $words = Word::paginate($this->wordsPerPage, ['*'], 'page', $this->currentPage);
@@ -37,7 +38,7 @@ class WordUpdateConversation extends Conversation
     // Prepare the message with the current page and list of words
     $listMessage = "So`zlar ro`yxati sahifasi: {$words->currentPage()} / {$words->lastPage()}\n\n";
     foreach ($words as $word) {
-        $listMessage .= "<b>{$word->id}</b>: {$word->name}\n";
+        $listMessage .= "/{$word->id}: {$word->name}\n";
     }
 
     // Prepare the inline keyboard for pagination
@@ -54,34 +55,41 @@ class WordUpdateConversation extends Conversation
     }
 
     // Create InlineKeyboardMarkup with the constructed keyboard
-    $replyMarkup = InlineKeyboardMarkup::make($keyboard);
+    $replyMarkup = InlineKeyboardMarkup::make();
+    $replyMarkup->addRow(...$keyboard);
 
     // Send the message with HTML parse mode and inline keyboard
-    $bot->sendMessage($listMessage, parse_mode: 'HTML', reply_markup: $replyMarkup);
+    if($update){
+        $bot->editMessageText($listMessage, reply_markup: $replyMarkup);
+
+    } else  {
+        $bot->sendMessage($listMessage, reply_markup: $replyMarkup);
+    }
+
     $this->next('waitForSelection');
 }
 
 
     public function waitForSelection(Nutgram $bot)
     {
-        $callbackData = $bot->callbackQuery()->data;
-
+        $callbackData = $bot->callbackQuery()->data ?? null;
+        $wordId = $bot->message()->text;
         if ($callbackData === 'next_page') {
             $this->currentPage++;
-            $this->askForPage($bot);
+            $this->askForPage($bot, true);
             return;
         } elseif ($callbackData === 'prev_page') {
             $this->currentPage--;
             if ($this->currentPage < 1) {
                 $this->currentPage = 1;
             }
-            $this->askForPage($bot);
+            $this->askForPage($bot, true);
             return;
         }
-
-        if (is_numeric($callbackData)) {
-            $this->selectedWordId = $callbackData;
-            $this->selectedWord = Word::find($this->selectedWordId);
+        $wordid  =  str_replace('/', '', $wordId);
+        if (is_numeric($wordid)) {
+            $this->selectedWordId = $wordid;
+            $this->selectedWord = Word::where('id',($this->selectedWordId))->first();
 
             if ($this->selectedWord) {
                 $this->askForName($bot);
@@ -94,57 +102,71 @@ class WordUpdateConversation extends Conversation
 
     public function askForName(Nutgram $bot)
     {
-        $bot->sendMessage("Tanlangan so`zning yangi nomini kiriting:");
+        $bot->sendMessage("Tanlangan so'zning yangi nomini kiriting yoki 'Keyingisi' tugmasini bosing:", reply_markup: ReplyMarkupKeyboards::getNavigationKeyboard());
         $this->next('updateName');
     }
 
     public function updateName(Nutgram $bot)
     {
-        $this->selectedWord->name = $bot->message()->text;
-        $bot->sendMessage("So`zning yangi o`qlishni kiriting: ю | [ ju: ]");
+        if ($bot->message()->text !== '⏩ Keyingisi') {
+            $this->selectedWord->name = $bot->message()->text;
+        }
+        $bot->sendMessage("So'zning yangi talaffuzini kiriting yoki 'Keyingisi' tugmasini bosing:", reply_markup: ReplyMarkupKeyboards::getNavigationKeyboard());
         $this->next('updatePronunciation');
     }
 
     public function updatePronunciation(Nutgram $bot)
     {
-        $this->selectedWord->pronunciation = $bot->message()->text;
-        $bot->sendMessage("So`zning yangi rus tilida tarjimasi:");
+        if ($bot->message()->text !== '⏩ Keyingisi') {
+            $this->selectedWord->pronunciation = $bot->message()->text;
+        }
+        $bot->sendMessage("So'zning yangi rus tilidagi tarjimasini kiriting yoki 'Keyingisi' tugmasini bosing:", reply_markup: ReplyMarkupKeyboards::getNavigationKeyboard());
         $this->next('updateRuTranslation');
     }
 
     public function updateRuTranslation(Nutgram $bot)
     {
-        $this->selectedWord->translations['ru'] = $bot->message()->text;
-        $bot->sendMessage("So`zning yangi o`zbek tilida tarjimasi:");
+        if ($bot->message()->text !== '⏩ Keyingisi') {
+            $translations = $this->selectedWord['translations'];
+            $translations['ru'] = $bot->message()->text;
+            $this->selectedWord['translations'] = $translations;
+        }
+        $bot->sendMessage("So'zning yangi o'zbek tilidagi tarjimasini kiriting yoki 'Keyingisi' tugmasini bosing:", reply_markup: ReplyMarkupKeyboards::getNavigationKeyboard());
         $this->next('updateUzTranslation');
     }
 
     public function updateUzTranslation(Nutgram $bot)
     {
-        $this->selectedWord->translations['uz'] = $bot->message()->text;
-        $bot->sendMessage("So`zning yangi rasmini jonating (agar o`zgartirilishi kerak bo`lsa):");
+        if ($bot->message()->text !== '⏩ Keyingisi') {
+            $translations = $this->selectedWord['translations'];
+            $translations['uz'] = $bot->message()->text;
+            $this->selectedWord['translations'] = $translations;
+        }
+        $bot->sendMessage("So'zning yangi rasmini yuboring (agar o'zgartirilishi kerak bo'lsa) yoki 'Keyingisi' tugmasini bosing:", reply_markup:ReplyMarkupKeyboards::getNavigationKeyboard());
         $this->next('updateImage');
     }
 
     public function updateImage(Nutgram $bot)
     {
-        $this->selectedWord->image = $bot->message()->photo[0]->file_id ?? $this->selectedWord->image;
-        $bot->sendMessage("So`zning yangi o`qlish ovazini yoki URL ni jonating (agar o`zgartirilishi kerak bo`lsa):");
+        if (!empty($bot->message()->photo)) {
+            $this->selectedWord->image = $bot->message()->photo[0]->file_id;
+        }
+        $bot->sendMessage("So'zning yangi talaffuz ovozini yoki URL-ni yuboring (agar o'zgartirilishi kerak bo'lsa) yoki 'Keyingisi' tugmasini bosing:",  reply_markup: ReplyMarkupKeyboards::getNavigationKeyboard());
         $this->next('updateAudio');
     }
 
     public function updateAudio(Nutgram $bot)
     {
-        $this->selectedWord->audio = $bot->message()->voice->file_id ?? $bot->message()->text;
-
-        // Process and store updated data
+        if (!empty($bot->message()->voice)) {
+            $this->selectedWord->audio = $bot->message()->voice->file_id;
+        }
         $this->processAndUpdateData($bot);
     }
 
     private function processAndUpdateData(Nutgram $bot)
     {
         // Validate and process image if available
-        if ($this->selectedWord->image) {
+        if (is_numeric($this->selectedWord->image)   ) {
             $photoFile = $bot->getFile($this->selectedWord->image);
             $photoUrl = $bot->getDownloadUrl($photoFile);
             $photoContent = file_get_contents($photoUrl);
@@ -162,7 +184,7 @@ class WordUpdateConversation extends Conversation
         }
 
         // Validate and process audio if available
-        if ($this->selectedWord->audio) {
+        if (is_numeric($this->selectedWord->image)) {
             // Check if $this->selectedWord->audio is a file ID or a URL
             if (filter_var($this->selectedWord->audio, FILTER_VALIDATE_URL)) {
                 // Handle URL case (optional)

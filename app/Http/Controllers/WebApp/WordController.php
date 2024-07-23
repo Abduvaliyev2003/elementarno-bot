@@ -12,7 +12,7 @@ class WordController extends Controller
     public function show($id)
     {
         $word = Word::find($id);
-        $categories = WordCategories::get();
+        $categories = WordCategories::with('words')->get();
         return view('pages/word', compact('word', 'categories'));
     }
 }

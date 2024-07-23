@@ -21,7 +21,7 @@ class HomeController
     {
         $words = Word::where('category_id', $id)->get();
         $category = WordCategories::find($id);
-        $categories = WordCategories::get();
+        $categories = WordCategories::with('words')->get();
         return view('pages/word-lists', compact('words', 'category', 'categories'));
     }
 

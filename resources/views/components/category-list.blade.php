@@ -9,7 +9,7 @@
         <h4>{{$lang == 'ru' ? $category->title_ru : $category->title_uz }}</h4>
         <div class="word-content">
             <img class="icon" src="{{ $category->image }}" alt="Icon">
-            <h1 class="word-count">100 {{ $lang == 'ru' ?  "Слово" : "Gap" }} </h1>
+            <h1 class="word-count">{{ $category->words->count() ?? 0 }} {{ $lang == 'ru' ?  "Слово" : "Gap" }} </h1>
         </div>
     </a>
     @endforeach

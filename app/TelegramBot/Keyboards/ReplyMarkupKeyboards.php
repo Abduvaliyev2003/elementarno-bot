@@ -128,4 +128,15 @@ class ReplyMarkupKeyboards
 
         return $replyKeyboardMarkup;
     }
+
+     public static function getNavigationKeyboard()
+    {
+    return ReplyKeyboardMarkup::make(
+        resize_keyboard: true,
+        one_time_keyboard: true
+    )->addRow(
+        KeyboardButton::make(text: '⏩ Keyingisi'),
+        KeyboardButton::make(text: '❌ Bekor qilish')
+    );
+    }
 }
